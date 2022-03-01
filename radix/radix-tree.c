@@ -191,12 +191,11 @@ radix_tree_insert_internal (RadixTree     *tree,
       split_root = FALSE;
       root = node;
 
-      while (equal == 0
-             && mask < key_mask
-             && mask < node->key_mask)
+      for (mask = 0;
+           equal == 0 && mask < key_mask && mask < node->key_mask;
+           mask++)
         {
           equal = radix_cmp_bit (key, node->key, mask);
-          mask ++;
         }
 
       if (equal == 0)
@@ -289,8 +288,8 @@ radix_tree_lookup_internal (RadixTree    *tree,
   while (node != NULL)
     {
       while (equal == 0
-             && mask < key_mask
-             && mask < node->key_mask)
+             && mask < (gint)key_mask
+             && mask < (gint)node->key_mask)
         {
           equal = radix_cmp_bit (key, node->key, mask);
           mask ++;
@@ -303,7 +302,7 @@ radix_tree_lookup_internal (RadixTree    *tree,
       else
         {
           /* node completed */
-          if (mask == node->key_mask)
+          if (mask == (gint)node->key_mask)
             {
               if (key_mask == node->key_mask)
                 {
@@ -469,7 +468,7 @@ radix_tree_new (void)
 }
 
 /**
- * radix_tree_new_with_destoy_func:
+ * radix_tree_new_with_destroy_func:
  * @value_destroy_func: a #GDestroyNotify function
  *
  * Creates a new #RadixTree.
@@ -628,8 +627,8 @@ radix_tree_remove (RadixTree    *tree,
   while (node != NULL && !found)
     {
       while (equal == 0
-             && mask < key_mask
-             && mask < node->key_mask)
+             && mask < (gint)key_mask
+             && mask < (gint)node->key_mask)
         {
           equal = radix_cmp_bit (key, node->key, mask);
           mask ++;
@@ -642,7 +641,7 @@ radix_tree_remove (RadixTree    *tree,
       else
         {
           /* node completed */
-          if (mask == node->key_mask)
+          if (mask == (gint)node->key_mask)
             {
               if (key_mask == node->key_mask)
                 {
@@ -698,7 +697,7 @@ radix_tree_remove (RadixTree    *tree,
  * for the better (nearest) key/mask in the tree that includes the key/mask
  * passed.
  *
- * Returns: the associated value found in the #RadixTree or %NUll
+ * Returns: (nullable): the associated value found in the #RadixTree or %NULL
  * if the key is not found.
  **/
 gpointer
@@ -715,7 +714,7 @@ radix_tree_lookup (RadixTree    *tree,
 }
 
 /**
- * radix_tree_exact_lookup: *
+ * radix_tree_exact_lookup:
  * @tree: a #RadixTree.
  * @key: the key to lookup for.
  * @key_mask: mask to apply to the key. This is the number of bits of the key.
@@ -723,7 +722,7 @@ radix_tree_lookup (RadixTree    *tree,
  * Looks up a the exactly key with mask in the #RadixTree. Returns the
  * associated value for the key/mask or %NULL if the key/mask is not in the tree.
  *
- * Returns: the associated value found in the #RadixTree or %NUll
+ * Returns: (nullable): the associated value found in the #RadixTree or %NULL
  * if the key is not found.
  **/
 gpointer

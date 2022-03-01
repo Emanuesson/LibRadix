@@ -16,7 +16,8 @@ In order to build Lib Radix you will need:
 
  * pkg-config
  * libtool
- * automake
+ * meson
+ * ninja
  * gtk-doc-tools
  * GLib, GIO ≥ 2.32
 
@@ -24,9 +25,9 @@ INSTALLATION
 -------------
 To build Lib Radix just run:
 
-    $ ./autogen.sh
-    $ make
-    $ sudo make install
+    $ meson setup ./build
+    $ ninja -C ./build
+    $ sudo meson install -C ./build
 
 AUTHOR, COPYRIGHT AND LICENSING
 -------------------------------

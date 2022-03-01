@@ -18,6 +18,7 @@
  */
 
 #include "config.h"
+#include "common_defines.h"
 
 #include "radix-tree.h"
 
@@ -43,7 +44,7 @@ static gchar *
 test_radix_tree_print_key (const guint8 *key,
                            guint         key_mask)
 {
-  gint i;
+  guint i;
   GString *key_str;
 
   key_str = g_string_new ("");
@@ -62,7 +63,7 @@ static gboolean
 test_radix_tree_print_node (const guint8 *key,
                             guint         key_mask,
                             gpointer      value,
-                            gpointer      data)
+                            gpointer      UNUSED(data))
 {
   gchar *key_str = test_radix_tree_print_key (key, key_mask);
   g_test_message ("[%s] mask: %d value: %s", key_str, key_mask, (gchar *)value);
@@ -94,7 +95,7 @@ test_radix_tree_insert (void)
   key2[1] = 0b10101010;
 
   g_test_message ("Insert");
-  gint i;
+  guint i;
   for (i = 1; i <= key_mask; i ++)
     {
       radix_tree_insert (tree, key, i, "left");
@@ -122,7 +123,7 @@ test_radix_tree_search (void)
   RadixTree *tree = radix_tree_new ();
   GRand *rand = g_rand_new ();
 
-  gint i;
+  guint i;
   guint num = 1000000;
 
   guint32 key[num];
@@ -130,8 +131,8 @@ test_radix_tree_search (void)
 
   for (i = 0; i < num; i ++)
     {
-      key[i] = g_rand_int (rand);
-      key_mask[i] = g_rand_int_range (rand, 1, 32);
+      key[i] = (guint32)g_rand_int (rand);
+      key_mask[i] = (guint)g_rand_int_range (rand, 1, 31);
 
       radix_tree_insert (tree, (guint8 *)&key[i], key_mask[i], "ok");
     }
@@ -139,7 +140,7 @@ test_radix_tree_search (void)
   for (i = 0; i < num; i ++)
     {
       guchar *found = (guchar *)radix_tree_exact_lookup (tree, (guint8 *)&key[i], key_mask[i]);
-      g_assert_cmpstr (found, ==, "ok");
+      g_assert_cmpstr ((gchar *)found, ==, "ok");
     }
 
   g_rand_free (rand);
@@ -154,7 +155,7 @@ test_radix_tree_remove (void)
 
   g_test_message ("nnodes = %u", radix_tree_nnodes (tree));
 
-  gint i;
+  guint i;
   guint num = 1000000;
 
   guint32 key[num];
@@ -200,9 +201,13 @@ test_radix_tree_gb (void)
   key[0] = 0b01010101;
   key[1] = 0b01010101;
   key[2] = 0b01010101;
+#if GLIB_CHECK_VERSION(2,68,0)
+  key2 = g_memdup2 (key, key_length);
+#else
   key2 = g_memdup (key, key_length);
+#endif
 
-  gint i;
+  guint i;
   for (i = 0; i < key_mask; i ++)
     {
       g_test_message ("%d", i);
@@ -211,6 +216,8 @@ test_radix_tree_gb (void)
       g_assert_cmpint (test_radix_cmp_bit (key, key2, i), ==, 0);
     }
 
+  g_free(key);
+  g_free(key2);
 }
 
 static void
@@ -219,7 +226,7 @@ test_radix_tree_foreach (void)
   RadixTree *tree = radix_tree_new ();
   GRand *rand = g_rand_new ();
 
-  gint i;
+  guint i;
   guint num = 1000000;
 
   guint32 key[num];

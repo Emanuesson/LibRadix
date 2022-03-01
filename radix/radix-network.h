@@ -37,6 +37,12 @@ typedef struct _RadixNetwork        RadixNetwork;
 typedef struct _RadixNetworkClass   RadixNetworkClass;
 typedef struct _RadixNetworkPrivate RadixNetworkPrivate;
 
+/**
+ * RadixNetwork:
+ * @parent: The parent instance
+ *
+ * TODO.
+ **/
 struct _RadixNetwork
 {
   GObject parent;
@@ -47,7 +53,10 @@ struct _RadixNetwork
 
 /**
  * RadixNetworkClass:
- **/
+ * @parent_class: The parent class.
+ *
+ * TODO
+ */
 struct _RadixNetworkClass
 {
   GObjectClass parent_class;
@@ -55,8 +64,6 @@ struct _RadixNetworkClass
 
 GType                           radix_network_get_type                  (void) G_GNUC_CONST;
 RadixNetwork *                  radix_network_new                       (void);
-RadixNetwork *                  radix_network_ref                       (RadixNetwork       *network);
-void                            radix_network_unref                     (RadixNetwork       *network);
 void                            radix_network_insert                    (RadixNetwork       *network,
                                                                          GInetAddressMask   *address);
 gboolean                        radix_network_remove                    (RadixNetwork       *network,

@@ -1,0 +1,49 @@
+stages:
+  - build
+  - test
+
+default:
+  image: alpine:edge
+  before_script:
+    - apk update
+    # Install dependencies
+    - apk add g++ git meson ninja python3 valgrind pkgconf glib-dev
+
+build:
+  stage: build
+  interruptible: true
+  script:
+    # Prepare packages
+    - rm -rf ./build
+    - meson setup --werror --warnlevel 2 --buildtype=release -Dbuild_docs=enabled -Dtest=true ./build
+    # Build packages
+    - ninja -C ./build
+  artifacts:
+    paths:
+      - ./build/
+
+unittest:
+  stage: test
+  image: alpine:edge
+  needs:
+    - build
+  script:
+    # Test packages
+    - meson test -t 3 -C ./build
+  artifacts:
+    paths:
+      - build/meson-logs/testlog.txt
+
+valgrind_unittest:
+  stage: test
+  image: alpine:edge
+  needs:
+    - build
+  script:
+    # Test packages
+    - meson test --wrap='valgrind --tool=memcheck --error-exitcode=1 --max-stackframe=20000000 --main-stacksize=16000000 --track-origins=yes --leak-check=full --leak-resolution=high --num-callers=50 --show-leak-kinds=definite,possible --show-error-list=yes' -t 250 -C ./build
+  artifacts:
+    paths:
+      - build/meson-logs/testlog-valgrind.txt
+  timeout: 2 hours 30 minutes
+

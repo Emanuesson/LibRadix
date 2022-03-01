@@ -31,10 +31,6 @@
 
 #include "radix-tree.h"
 
-#define RADIX_NETWORK_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), \
-                                        RADIX_TYPE_NETWORK,                 \
-                                        RadixNetworkPrivate))
-
 /* Private data */
 struct _RadixNetworkPrivate
 {
@@ -46,7 +42,7 @@ static void     radix_network_init                    (RadixNetwork *self);
 static void     radix_network_finalize                (GObject *obj);
 static void     radix_network_dispose                 (GObject *obj);
 
-G_DEFINE_TYPE (RadixNetwork, radix_network, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (RadixNetwork, radix_network, G_TYPE_OBJECT)
 
 static void
 radix_network_class_init (RadixNetworkClass *class)
@@ -57,9 +53,6 @@ radix_network_class_init (RadixNetworkClass *class)
 
   obj_class->dispose = radix_network_dispose;
   obj_class->finalize = radix_network_finalize;
-
-  /* add private structure */
-  g_type_class_add_private (obj_class, sizeof (RadixNetworkPrivate));
 }
 
 static void
@@ -67,7 +60,7 @@ radix_network_init (RadixNetwork *self)
 {
   RadixNetworkPrivate *priv;
 
-  priv = RADIX_NETWORK_GET_PRIVATE (self);
+  priv = radix_network_get_instance_private (self);
   self->priv = priv;
 
   priv->tree = radix_tree_new_with_destroy_func (g_object_unref);

@@ -1,0 +1,12 @@
+option('doc',
+       type: 'boolean',
+       value: 'false',
+       description : 'Build API reference and tools documentation'
+)
+
+option(
+  'test',
+  type: 'boolean',
+  value: true,
+  description: 'run tests'
+)

@@ -26,6 +26,15 @@ G_BEGIN_DECLS
 
 typedef struct _RadixTree RadixTree;
 
+/**
+ * RadixTraverseFunc:
+ * @key: the key to lookup for.
+ * @key_mask: mask to apply to the key. This is the number of bits of the key.
+ * @value: the value correspondig to the key.
+ * @data: user data
+ *
+ * Function that could be executed over every key-value pair.
+ */
 typedef gboolean (*RadixTraverseFunc) (const guint8 *key,
                                        guint         key_mask,
                                        gpointer      value,
